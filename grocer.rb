@@ -18,23 +18,21 @@ def consolidate_cart(cart)
 end
 
 def apply_coupons(cart, coupons)
-  # code here
   coupons.each do |coupon|
-    item = coupon[:item]
-
-    if !coupon[item].nil? && coupon[item][:count] >= coupon[:num]
-      temp = {"#{item} W/COUPON"} => {
-        :price => coupon[:cost]
-        :clearance => cart[item][:clearance]
-        :count => 1
-        }
-      }
-      if cart["#{item} W/ COUPON"].nil?
-        cart.merge!(temp)
-      else
-        cart["#{item} W/ COUPON"][:count] += 1
+    if cart.keys.include? coupon[:item]
+      if cart[coupon[:item]][:count] >= coupon[:num]
+        new_name = "#{coupon[:item]} W/COUPON"
+        if cart[new_name]
+          cart[new_name][:count] += coupon[:num]
+        else
+          cart[new_name] = {
+            count: coupon[:num],
+            price: coupon[:cost]/coupon[:num],
+            clearance: cart[coupon[:item]][:clearance]
+          }
+        end
+        cart[coupon[:item]][:count] -= coupon[:num]
       end
-      cart[item][:count] -= coupon[:num]
     end
   end
   cart
